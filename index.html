@@ -827,8 +827,14 @@ function makeNote(n){
   if(wire){if(wireStart===null){wireStart=n.id;e.style.outline="4px solid #d51f1f"}else if(wireStart!==n.id){if(!links.some(l=>(l.a===wireStart&&l.b===n.id)||(l.a===n.id&&l.b===wireStart)))links.push({a:wireStart,b:n.id});wireStart=null;document.querySelectorAll(".note").forEach(z=>z.style.outline="");save();drawLinks()}x.stopPropagation();return}
   drag=true;dragMoved=false;sx=x.clientX;sy=x.clientY;ox=n.x;oy=n.y;e.setPointerCapture(x.pointerId);x.stopPropagation()};
  e.onpointermove=x=>{if(!drag)return;if(Math.abs(x.clientX-sx)>4||Math.abs(x.clientY-sy)>4)dragMoved=true;n.x=ox+(x.clientX-sx)/camera.scale;n.y=oy+(x.clientY-sy)/camera.scale;e.style.left=n.x+"px";e.style.top=n.y+"px";drawLinks()};
- e.onpointerup=()=>{if(drag){drag=false;if(!dragMoved)focusNote(n.id);else save()}};
- e.ondblclick=x=>{if(!wire&&x.target.tagName!=="TEXTAREA")editName(n)};board.appendChild(e)
+ e.onpointerup=()=>{if(drag){drag=false;if(!dragMoved){
+    if(n.refType&&n.refId)openEntityEditor(n.refType,n.refId);
+    else focusNote(n.id);
+   }else save()}};
+ e.ondblclick=x=>{if(!wire&&x.target.tagName!=="TEXTAREA"){
+   if(n.refType&&n.refId)openEntityEditor(n.refType,n.refId);
+   else editName(n);
+  }};board.appendChild(e)
 }
 function renderBoard(){board.querySelectorAll(".note").forEach(e=>e.remove());notes.forEach(makeNote);drawLinks()}
 function renderAll(){renderBoard();renderPanels()}
